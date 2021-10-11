@@ -7,6 +7,7 @@ class EmojiView extends StatefulWidget {
   final Map mapJson;
   final Function(DragUpdateDetails) onpanupdate;
 
+
   const EmojiView({
     Key key,
     this.left,

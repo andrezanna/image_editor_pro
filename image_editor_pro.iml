@@ -41,6 +41,12 @@
       <excludeFolder url="file://$MODULE_DIR$/example/windows/flutter/ephemeral/.plugin_symlinks/path_provider_windows/example/.dart_tool" />
       <excludeFolder url="file://$MODULE_DIR$/example/windows/flutter/ephemeral/.plugin_symlinks/path_provider_windows/example/.pub" />
       <excludeFolder url="file://$MODULE_DIR$/example/windows/flutter/ephemeral/.plugin_symlinks/path_provider_windows/example/build" />
+      <excludeFolder url="file://$MODULE_DIR$/image_studio_pro/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/image_studio_pro/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/image_studio_pro/build" />
+      <excludeFolder url="file://$MODULE_DIR$/image_studio_pro/example/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/image_studio_pro/example/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/image_studio_pro/example/build" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Dart SDK" level="project" />
