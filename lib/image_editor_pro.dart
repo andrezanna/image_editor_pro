@@ -63,7 +63,8 @@ class _ImageEditorProState extends State<ImageEditorPro> {
   // create some values
   Color pickerColor = Color(0xff443a49);
   Color currentColor = Color(0xff443a49);
-
+  double oldScale=1.0;
+  Offset oldOffset=Offset(0,0);
 // ValueChanged<Color> callback
   void changeColor(Color color) {
     setState(() => pickerColor = color);
@@ -136,131 +137,157 @@ class _ImageEditorProState extends State<ImageEditorPro> {
 
   @override
   Widget build(BuildContext context) {
-    return Screenshot(
-      controller: screenshotController,
-      child: RotatedBox(
-        quarterTurns: rotateValue,
-        child: imageFilterLatest(
+    return RotatedBox(
+      quarterTurns: rotateValue,
+      child:  imageFilterLatest(
           hue: hueValue,
           brightness: brightnessValue,
           saturation: saturationValue,
-          child: RepaintBoundary(
-              key: globalKey,
-              child: xStack.list(
-                [
-                  _image != null
-                      ? Transform(
-                          alignment: Alignment.center,
-                          transform: Matrix4.rotationY(flipValue),
-                          child: ClipRect(
-                            // <-- clips to the 200x200 [Container] below
+          child: Container(
+            color: Colors.blue,
+            child: Screenshot(
+        controller: screenshotController,
+        child:RepaintBoundary(
+                key: globalKey,
+                child: AspectRatio(
+                  aspectRatio: width/height,
+                  child: xStack.list(
+                    [
+                      _image != null
+                          ? Transform(
+                              alignment: Alignment.center,
+                              transform: Matrix4.rotationY(flipValue),
+                              child: ClipRect(
+                                // <-- clips to the 200x200 [Container] below
 
-                            child: _image.path.decorationIFToFitHeight().xContainer(
-                                padding: EdgeInsets.zero,
-                                // alignment: Alignment.center,
-                                width: width.toDouble(),
-                                height: height.toDouble(),
-                                child: BackdropFilter(
-                                  filter: ImageFilter.blur(
-                                    sigmaX: blurValue,
-                                    sigmaY: blurValue,
-                                  ),
-                                  child: Container(
-                                    color: colorValue.withOpacity(opacityValue),
-                                  ),
-                                )),
-                          ),
-                        )
-
-                      //  BackdropFilter(
-                      //     filter: ImageFilter.blur(
-                      //         sigmaX: 10.0, sigmaY: 10.0, tileMode: TileMode.clamp),
-                      //     child: Image.file(
-                      //       _image,
-                      //       height: height.toDouble(),
-                      //       width: width.toDouble(),
-                      //       fit: BoxFit.cover,
-                      //     ),
-                      //   )
-                      : Container(),
-                  AbsorbPointer(
-                    absorbing:!enableBrush,
-                      child: Signat().xGesture(
-                      onPanUpdate: (DragUpdateDetails details) {
-                          setState(() {
-                            //print("update");
-                            RenderBox object = context.findRenderObject();
-                            var _localPosition = object.globalToLocal(
-                                details.globalPosition);
-                            _points = List.from(_points)
-                              ..add(_localPosition);
-                          });
-
-                      },
-                      onPanEnd: (DragEndDetails details) {
-                        _points.add(null);
-                      },
-                    ).xContainer(padding: EdgeInsets.all(0.0)),
-                  ),
-                  xStack.list(
-                    widgetJson.asMap().entries.map((f) {
-                      return type[f.key] == 1
-                          ? EmojiView(
-                              left: offsets[f.key].dx,
-                              top: offsets[f.key].dy,
-                              ontap: () {
-                                scaf.currentState.showBottomSheet((context) {
-                                  return Sliders(
-                                    index: f.key,
-                                    mapValue: f.value,
-                                    onlySize: true,
-                                  );
-                                });
-                              },
-                              onpanupdate: (details) {
-                                setState(() {
-                                  offsets[f.key] =
-                                      Offset(offsets[f.key].dx + details.delta.dx, offsets[f.key].dy + details.delta.dy);
-                                });
-                              },
-
-                              mapJson: f.value,
+                                child: _image.path.decorationIFToContain().xContainer(
+                                    padding: EdgeInsets.zero,
+                                    // alignment: Alignment.center,
+                                    //width: width.toDouble(),
+                                    //height: height.toDouble(),
+                                    child: BackdropFilter(
+                                      filter: ImageFilter.blur(
+                                        sigmaX: blurValue,
+                                        sigmaY: blurValue,
+                                      ),
+                                      child: Container(
+                                        color: colorValue.withOpacity(opacityValue),
+                                      ),
+                                    )),
+                              ),
                             )
-                          : type[f.key] == 2
-                              ? TextView(
+
+                          //  BackdropFilter(
+                          //     filter: ImageFilter.blur(
+                          //         sigmaX: 10.0, sigmaY: 10.0, tileMode: TileMode.clamp),
+                          //     child: Image.file(
+                          //       _image,
+                          //       height: height.toDouble(),
+                          //       width: width.toDouble(),
+                          //       fit: BoxFit.cover,
+                          //     ),
+                          //   )
+                          : Container(),
+                      AbsorbPointer(
+                        absorbing:!enableBrush,
+                          child: Signat().xGesture(
+                          onPanUpdate: (DragUpdateDetails details) {
+                              setState(() {
+                                //print("update");
+                                RenderBox object = context.findRenderObject();
+                                var _localPosition = object.globalToLocal(
+                                    details.globalPosition);
+                                _points = List.from(_points)
+                                  ..add(_localPosition);
+                              });
+
+                          },
+                          onPanEnd: (DragEndDetails details) {
+                            _points.add(null);
+                          },
+                        ).xContainer(padding: EdgeInsets.all(0.0)),
+                      ),
+                      xStack.list(
+                        widgetJson.asMap().entries.map((f) {
+                          return type[f.key] == 1
+                              ? EmojiView(
                                   left: offsets[f.key].dx,
                                   top: offsets[f.key].dy,
                                   ontap: () {
-                                    showModalBottomSheet(
-                                        shape: BorderRadius.only(topRight: Radius.circular(10), topLeft: Radius.circular(10))
-                                            .xShapeBorder(),
-                                        context: context,
-                                        builder: (context) {
-                                          return Sliders(
-                                            index: f.key,
-                                            mapValue: f.value,
-                                          );
-                                        });
+                                    scaf.currentState.showBottomSheet((context) {
+                                      return Sliders(
+                                        index: f.key,
+                                        mapValue: f.value,
+                                        onlySize: true,
+                                      );
+                                    });
                                   },
-                                  onpanupdate: (details) {
+                                  /*onpanupdate: (details) {
                                     setState(() {
                                       offsets[f.key] =
                                           Offset(offsets[f.key].dx + details.delta.dx, offsets[f.key].dy + details.delta.dy);
                                     });
+                                  },*/
+                                  onscalestart:(details){
+                                    if(details.pointerCount==1){
+                                      oldScale=-1;
+                                      oldOffset=offsets[f.key];
+                                      print("single");
+                                    }else {
+                                      oldScale = widgetJson[f.key]['size'];
+                                    }
+                                          //oldScale=details.;
+                                  },
+                                  onscaleupdate: (details){
+                                    setState((){
+                                      if(oldScale==-1) {
+                                        print(details.localFocalPoint);
+                                        print(details.delta);
+                                        offsets[f.key] =
+                                            Offset(oldOffset.dx +
+                                                details.delta.dx,
+                                                oldOffset.dy +
+                                                    details.delta.dy);
+                                      }else {
+                                        widgetJson[f.key]['size'] =
+                                            oldScale * details.scale;
+                                      }
+                                    });
                                   },
                                   mapJson: f.value,
                                 )
-                              : Container();
-                    }).toList(),
-                  )
-                ],
-              )).toContainer(
-            margin: EdgeInsets.all(20),
-            color: Colors.white,
-            width: width.toDouble(),
-            height: height.toDouble(),
-          ),
+                              : type[f.key] == 2
+                                  ? TextView(
+                                      left: offsets[f.key].dx,
+                                      top: offsets[f.key].dy,
+                                      ontap: () {
+                                        showModalBottomSheet(
+                                            shape: BorderRadius.only(topRight: Radius.circular(10), topLeft: Radius.circular(10))
+                                                .xShapeBorder(),
+                                            context: context,
+                                            builder: (context) {
+                                              return Sliders(
+                                                index: f.key,
+                                                mapValue: f.value,
+                                              );
+                                            });
+                                      },
+                                      onpanupdate: (details) {
+                                        setState(() {
+                                          offsets[f.key] =
+                                              Offset(offsets[f.key].dx + details.delta.dx, offsets[f.key].dy + details.delta.dy);
+                                        });
+                                      },
+                                      mapJson: f.value,
+                                    )
+                                  : Container();
+                        }).toList(),
+                      )
+                    ],
+                  ),
+                )),
         ),
+          ),
       ),
     ).xCenter().xScaffold(
         backgroundColor: Colors.grey.shade400,
@@ -271,7 +298,7 @@ class _ImageEditorProState extends State<ImageEditorPro> {
             'Salva'.text().xFlatButton(
                 primary: Colors.black,
                 onPressed: () {
-                  screenshotController.capture(pixelRatio: widget.pixelRatio ?? 1.5).then((binaryIntList) async {
+                  screenshotController.capture(pixelRatio: widget.pixelRatio ?? 1).then((binaryIntList) async {
                     //print("Capture Done");
 
                     final paths = widget.pathSave ?? await getTemporaryDirectory();
@@ -694,6 +721,8 @@ class _ImageEditorProState extends State<ImageEditorPro> {
     setState(() {
       height = decodedImage.height;
       width = decodedImage.width;
+      print(height);
+      print(width);
       _image = imageFile;
       _controller.clear();
     });
